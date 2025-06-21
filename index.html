@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camino hacia el Equilibrio - IA</title>
+    <title>Camino hacia el Equilibrio - IA Enhanced</title>
     <style>
         * {
             margin: 0;
@@ -150,6 +150,15 @@
             margin-top: 0.5rem;
         }
 
+        .security-note {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+
         /* AI Features */
         .ai-mentor {
             background: rgba(139, 92, 246, 0.2);
@@ -187,6 +196,7 @@
             gap: 0.5rem;
             color: #9ca3af;
             font-size: 0.875rem;
+            margin-top: 0.5rem;
         }
 
         .typing-dots {
@@ -216,6 +226,18 @@
             border-radius: 12px;
             padding: 1.5rem;
             margin-top: 1rem;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .reflection-title {
@@ -223,6 +245,9 @@
             font-weight: 600;
             color: #86efac;
             margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .reflection-content {
@@ -276,21 +301,30 @@
             margin-bottom: 1rem;
         }
 
-        .plan-section {
-            margin-bottom: 1.5rem;
+        /* Quick AI Setup */
+        .quick-setup {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
         }
 
-        .plan-section-title {
-            font-size: 1rem;
+        .quick-setup-title {
             font-weight: 600;
-            color: #86efac;
+            color: #fbbf24;
             margin-bottom: 0.5rem;
         }
 
-        .plan-content {
+        .quick-setup-btn {
+            background: rgba(255, 193, 7, 0.3);
+            border: 1px solid rgba(255, 193, 7, 0.5);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
             font-size: 0.875rem;
-            line-height: 1.5;
-            color: #e5e7eb;
+            margin-top: 0.5rem;
         }
 
         /* Loading States */
@@ -554,6 +588,12 @@
             transform: scale(1.02);
         }
 
+        .option-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .option-letter {
             width: 32px;
             height: 32px;
@@ -745,7 +785,15 @@
                 <p class="config-subtitle">Activa la inteligencia artificial para una experiencia personalizada</p>
             </div>
             
-            <div class="config-form glass">
+            <div class="quick-setup">
+                <div class="quick-setup-title">⚡ Configuración Rápida</div>
+                <p style="font-size: 0.875rem; color: #d1d5db; margin-bottom: 0.5rem;">Para una experiencia completa con IA, necesitas una API key de OpenAI</p>
+                <button class="quick-setup-btn" onclick="toggleAPIForm()">
+                    Configurar API Key
+                </button>
+            </div>
+            
+            <div id="api-form" class="config-form glass">
                 <div class="form-group">
                     <label class="form-label">API Key de OpenAI:</label>
                     <input type="password" id="api-key" class="form-input" placeholder="sk-...">
@@ -756,6 +804,10 @@
                     <label class="form-label">Situación personal (opcional):</label>
                     <input type="text" id="personal-context" class="form-input" placeholder="Ej: Estoy cambiando de carrera profesional...">
                     <div class="form-help">La IA creará escenarios personalizados basados en tu situación</div>
+                </div>
+                
+                <div class="security-note">
+                    🔒 <strong>Seguridad:</strong> Tu API key permanece en tu navegador y no se envía a ningún servidor externo excepto OpenAI.
                 </div>
             </div>
 
@@ -776,7 +828,7 @@
         <div class="intro-screen">
             <div>
                 <h1 class="intro-title gradient-text">Camino hacia el Equilibrio</h1>
-                <p class="intro-subtitle">Un viaje interactivo de autodescubrimiento con IA</p>
+                <p class="intro-subtitle">Un viaje interactivo de autodescubrimiento <span id="ai-badge" class="hidden">con IA</span></p>
             </div>
             
             <div class="quote-box glass">
@@ -887,7 +939,10 @@
 
             <!-- AI Reflection -->
             <div id="ai-reflection" class="reflection-panel hidden">
-                <div class="reflection-title">💭 Reflexión IA</div>
+                <div class="reflection-title">
+                    <span>💭</span>
+                    <span>Reflexión IA</span>
+                </div>
                 <div id="reflection-content" class="reflection-content">
                     Analizando tu elección...
                 </div>
@@ -1042,6 +1097,39 @@
                     { text: "Dedico tiempo a apoyar a mi compañero aunque afecte mi rendimiento", type: 'feminine', points: 2 },
                     { text: "Busco una solución que permita cuidar a mi compañero y cumplir objetivos", type: 'integrative', points: 3 }
                 ]
+            },
+            {
+                id: 3,
+                title: "Liderazgo del grupo",
+                description: "Te eligen líder de un proyecto comunitario. Hay diferentes opiniones sobre cómo proceder y el tiempo es limitado.",
+                image: "👑",
+                options: [
+                    { text: "Tomo decisiones rápidas basándome en mi experiencia", type: 'masculine', points: 2 },
+                    { text: "Organizo círculos de diálogo para que todos sean escuchados", type: 'feminine', points: 2 },
+                    { text: "Combino consulta grupal con momentos de decisión ejecutiva", type: 'integrative', points: 3 }
+                ]
+            },
+            {
+                id: 4,
+                title: "Competencia vs Colaboración",
+                description: "En una situación competitiva, descubres que puedes ganar fácilmente, pero eso significaría que otros perderían oportunidades importantes.",
+                image: "🏆",
+                options: [
+                    { text: "Compito para ganar, es parte del juego", type: 'masculine', points: 2 },
+                    { text: "Me retiro para dar oportunidad a otros", type: 'feminine', points: 2 },
+                    { text: "Busco maneras de transformar la competencia en colaboración", type: 'integrative', points: 3 }
+                ]
+            },
+            {
+                id: 5,
+                title: "Cuidado del planeta",
+                description: "Tu empresa puede aumentar ganancias significativamente, pero las nuevas prácticas tendrían impacto ambiental negativo.",
+                image: "🌍",
+                options: [
+                    { text: "Priorizo el crecimiento económico y competitividad", type: 'masculine', points: 2 },
+                    { text: "Elijo proteger el ambiente aunque reduzcamos ganancias", type: 'feminine', points: 2 },
+                    { text: "Innovo para encontrar alternativas rentables y sostenibles", type: 'integrative', points: 3 }
+                ]
             }
         ];
 
@@ -1092,6 +1180,16 @@
             document.getElementById(screenId).classList.remove('hidden');
         }
 
+        // Missing function that was causing the error
+        function toggleAPIForm() {
+            const form = document.getElementById('api-form');
+            if (form.classList.contains('hidden')) {
+                form.classList.remove('hidden');
+            } else {
+                form.classList.add('hidden');
+            }
+        }
+
         // Configuration functions
         function saveConfigAndStart() {
             apiKey = document.getElementById('api-key').value.trim();
@@ -1108,6 +1206,7 @@
             
             // Show AI features
             document.getElementById('ai-mentor').classList.remove('hidden');
+            document.getElementById('ai-badge').classList.remove('hidden');
         }
 
         function startWithoutAI() {
@@ -1359,7 +1458,7 @@ Máximo 250 palabras total. Tono práctico pero inspirador.`;
 
         async function handleChoice(option, scenario) {
             scores[option.type] += option.points;
-            
+
             // Store decision for analysis
             decisions.push({
                 scenario: scenario.title,
@@ -1367,21 +1466,40 @@ Máximo 250 palabras total. Tono práctico pero inspirador.`;
                 type: option.type,
                 points: option.points
             });
-            
-            // Hide options
-            document.getElementById('options-container').style.display = 'none';
-            
-            // Generate AI reflection
+
+            // Disable all option buttons to prevent multiple clicks
+            const optionButtons = document.querySelectorAll('.option-button');
+            optionButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = '0.6';
+            });
+
+            // Mostrar reflexión IA o fallback
+            document.getElementById('ai-reflection').classList.remove('hidden');
+            document.getElementById('reflection-content').textContent = 'Analizando tu elección...';
+
+            let reflection = null;
             if (aiEnabled) {
-                document.getElementById('ai-reflection').classList.remove('hidden');
-                document.getElementById('reflection-content').textContent = 'Analizando tu elección...';
-                
-                const reflection = await generateReflection(option, scenario);
-                if (reflection) {
-                    document.getElementById('reflection-content').textContent = reflection;
-                }
+                reflection = await generateReflection(option, scenario);
             }
-            
+
+            if (reflection && reflection.trim().length > 0) {
+                document.getElementById('reflection-content').textContent = reflection;
+            } else {
+                // Reflexión fallback según tipo de energía
+                let fallback = '';
+                if (option.type === 'masculine') {
+                    fallback = 'Has elegido una respuesta orientada a la acción y el límite. Recuerda que, según Boff y Muraro, la energía masculina es necesaria para afirmar el propio espacio, pero es importante equilibrarla con la escucha y el cuidado.';
+                } else if (option.type === 'feminine') {
+                    fallback = 'Has optado por el cuidado y la empatía, valores del principio femenino. Esta actitud fomenta la cohesión, pero también es importante poner límites cuando sea necesario.';
+                } else if (option.type === 'integrative') {
+                    fallback = 'Tu elección integra lo mejor de ambos principios: estructura y cuidado. La integración de lo femenino y masculino permite soluciones creativas y justas.';
+                } else {
+                    fallback = 'Gracias por tu elección. Recuerda reflexionar sobre cómo integras el cuidado y la acción en tu vida.';
+                }
+                document.getElementById('reflection-content').textContent = fallback;
+            }
+
             // Show continue button
             document.getElementById('continue-btn').classList.remove('hidden');
         }
@@ -1390,7 +1508,6 @@ Máximo 250 palabras total. Tono práctico pero inspirador.`;
             // Hide reflection and continue button
             document.getElementById('ai-reflection').classList.add('hidden');
             document.getElementById('continue-btn').classList.add('hidden');
-            document.getElementById('options-container').style.display = 'block';
             
             // Load next scenario or end game
             if (scenarioCount >= 5) {
@@ -1475,16 +1592,23 @@ Máximo 250 palabras total. Tono práctico pero inspirador.`;
                 document.getElementById('coaching-plan').classList.remove('hidden');
                 
                 // Generate AI analysis
-                const analysis = await generateFinalAnalysis(decisions, scores, playerName);
-                if (analysis) {
-                    document.getElementById('ai-analysis-content').textContent = analysis;
+                let analysis = await generateFinalAnalysis(decisions, scores, playerName);
+                if (!analysis || analysis.trim().length === 0) {
+                    analysis = "Tu viaje muestra un patrón único de integración de energías. Recuerda que, según Boff y Muraro, el equilibrio entre lo femenino y lo masculino es fuente de plenitud y transformación. Sigue explorando tu propio camino de integración.";
                 }
+                document.getElementById('ai-analysis-content').textContent = analysis;
                 
                 // Generate coaching plan
-                const coachingPlan = await generateCoachingPlan(decisions, scores, playerName);
-                if (coachingPlan) {
-                    document.getElementById('coaching-content').innerHTML = coachingPlan.replace(/\n/g, '<br>');
+                let coachingPlan = await generateCoachingPlan(decisions, scores, playerName);
+                if (!coachingPlan || coachingPlan.trim().length === 0) {
+                    coachingPlan = `
+                <b>Fortalezas:</b> Has desarrollado aspectos importantes de tu equilibrio interior.<br>
+                <b>Áreas de crecimiento:</b> Busca integrar aún más los principios opuestos.<br>
+                <b>Prácticas recomendadas:</b> Reflexiona cada día sobre tus decisiones y cómo puedes sumar cuidado y acción.<br>
+                <b>Reflexión semanal:</b> ¿En qué situaciones sentiste mayor armonía entre tu empatía y tu capacidad de actuar?
+            `;
                 }
+                document.getElementById('coaching-content').innerHTML = coachingPlan.replace(/\n/g, '<br>');
             }
         }
 
@@ -1538,27 +1662,6 @@ Máximo 250 palabras total. Tono práctico pero inspirador.`;
             
             showScreen('config-screen');
         }
-
-        // Ejemplo de función para mostrar la reflexión según la opción elegida
-        function mostrarReflexion(escenario, opcion) {
-          let reflexion = "";
-
-          if (escenario === 1) {
-            if (opcion === "A") {
-              reflexion = "Has elegido una respuesta orientada a la acción y el límite. Según Boff y Muraro, esta energía masculina es necesaria para afirmar el propio espacio, pero recuerda equilibrarla con la escucha al otro.";
-            } else if (opcion === "B") {
-              reflexion = "Has optado por el cuidado y la empatía, valores del principio femenino. Boff y Muraro destacan que esta actitud fomenta la cohesión, pero también es importante poner límites cuando sea necesario.";
-            } else if (opcion === "C") {
-              reflexion = "Tu elección integra lo mejor de ambos principios: estructura y cuidado. Según Boff y Muraro, la integración de lo femenino y masculino permite soluciones creativas y justas.";
-            }
-          }
-          // Agrega lógica similar para los demás escenarios...
-
-          document.getElementById("reflexionIA").innerText = reflexion;
-        }
-
-        // Cuando el usuario selecciona una opción, llama a esta función:
-        // mostrarReflexion(numeroEscenario, opcionSeleccionada);
 
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
